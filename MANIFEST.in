@@ -1,0 +1,11 @@
+include european_energy_divide_map/european_energy_divide_map.min.js
+include european_energy_divide_map/european_energy_divide_map.min.js.map
+include european_energy_divide_map/async-*.js
+include european_energy_divide_map/async-*.js.map
+include european_energy_divide_map/*-shared.js
+include european_energy_divide_map/*-shared.js.map
+include european_energy_divide_map/metadata.json
+include european_energy_divide_map/package-info.json
+include README.md
+include LICENSE
+include package.json

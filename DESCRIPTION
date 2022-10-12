@@ -1,0 +1,13 @@
+Package: europeanEnergyDivideMap
+Title: Map with overlays of the European Divide Trail and community energy projects
+Version: 0.0.1
+Description: Map with overlays of the European Divide Trail and community energy projects
+Depends: R (>= 3.0.2)
+Imports: 
+Suggests: 
+License: GPL-3.0 + file LICENSE
+URL: https://github.com/thisistheplace/european-energy-divide-map
+BugReports: https://github.com/thisistheplace/european-energy-divide-map/issues
+Encoding: UTF-8
+LazyData: true
+KeepSource: true
