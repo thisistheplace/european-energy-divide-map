@@ -12,7 +12,7 @@
   "homepage": "https://github.com/thisistheplace/european-energy-divide-map",
   "main": "build/index.js",
   "scripts": {
-    "start": "webpack-serve --config ./webpack.serve.config.js --open",
+    "start": "webpack-serve --config ./webpack.serve.config.js --open --port 8050",
     "validate-init": "python _validate_init.py",
     "prepublishOnly": "npm run validate-init",
     "build:js": "webpack --mode production",
@@ -24,9 +24,9 @@
   "author": "Ben Cannell <bean.can.design@gmail.com>",
   "license": "GPL-3.0",
   "dependencies": {
+    "@react-leaflet/core": "1.0.2",
     "ramda": "^0.26.1",
-    "react-leaflet": "3.1.0",
-    "@react-leaflet/core": "1.0.2"
+    "react-leaflet": "3.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.4",

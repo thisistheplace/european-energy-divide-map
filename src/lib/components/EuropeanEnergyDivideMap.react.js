@@ -6,7 +6,6 @@ import {Map} from '../map/map'
 function EuropeanEnergyDivideMap(props) {
     return (
         <div id={props.id} style={{"height":"100%", "width":"100%"}}>
-            "Heloooooo"
             <Map {...props}/>
         </div>
     )
