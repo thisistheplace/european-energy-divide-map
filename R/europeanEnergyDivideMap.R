@@ -1,9 +1,9 @@
 # AUTO GENERATED FILE - DO NOT EDIT
 
 #' @export
-europeanEnergyDivideMap <- function(id=NULL, label=NULL, value=NULL) {
+europeanEnergyDivideMap <- function(id=NULL) {
     
-    props <- list(id=id, label=label, value=value)
+    props <- list(id=id)
     if (length(props) > 0) {
         props <- props[!vapply(props, is.null, logical(1))]
     }
@@ -11,7 +11,7 @@ europeanEnergyDivideMap <- function(id=NULL, label=NULL, value=NULL) {
         props = props,
         type = 'EuropeanEnergyDivideMap',
         namespace = 'european_energy_divide_map',
-        propNames = c('id', 'label', 'value'),
+        propNames = c('id'),
         package = 'europeanEnergyDivideMap'
         )
 
