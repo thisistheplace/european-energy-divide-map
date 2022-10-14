@@ -2,11 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import {Map} from '../map/map'
+import {EuroMap} from '../map/eurobase'
 
 function EuropeanEnergyDivideMap(props) {
     return (
         <div id={props.id} style={{"height":"100%", "width":"100%"}}>
-            <Map {...props}/>
+            <EuroMap {...props}/>
         </div>
     )
 }
