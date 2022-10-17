@@ -1,4 +1,3 @@
-from unicodedata import name
 import gpxpy
 import gpxpy.gpx
 
@@ -6,7 +5,6 @@ import geojson
 
 import json
 from pathlib import Path
-from pydantic import BaseModel
 import os
 
 root = Path("gpx").resolve()
@@ -15,6 +13,7 @@ routes: list[geojson.Feature] = []
 
 for fname in sorted(os.listdir(root)):
     gpx_path = root / fname
+    if gpx_path.suffix.lower() != ".gpx": continue
     print(fname)
     with open(gpx_path, "r") as gpx_file:
         gpx = gpxpy.parse(gpx_file)

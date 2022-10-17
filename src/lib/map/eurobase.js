@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { MapContainer, TileLayer, Pane, GeoJSON, Marker, Popup } from 'react-leaflet'
 import { getJsonData } from './loadjson.js'
 import { GpxRoute } from './gpx.js'
+import { EuroStats } from './eurostats.js'
 
 const EuroMap = (props) => {
   const [euCountries, setEuCountries] = useState()
@@ -23,9 +24,10 @@ const EuroMap = (props) => {
         url="https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
         pane="labels"
       />
-      {euCountries && (
+      {/* {euCountries && (
         <GeoJSON attribution="test attribution" data={euCountries}/>
-      )}
+      )} */}
+      <EuroStats {...props}/>
       <GpxRoute {...props}/>
     </MapContainer>
   )
