@@ -1,6 +1,6 @@
 Package: europeanEnergyDivideMap
 Title: Map with overlays of the European Divide Trail and community energy projects
-Version: 0.0.1
+Version: 0.0.3
 Description: Map with overlays of the European Divide Trail and community energy projects
 Depends: R (>= 3.0.2)
 Imports: 

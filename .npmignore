@@ -1,0 +1,8 @@
+gpx
+assets
+venv
+node_modules
+tests
+R
+.build_cache
+*.py

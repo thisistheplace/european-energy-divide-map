@@ -1,6 +1,6 @@
 {
   "name": "european_energy_divide_map",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Map with overlays of the European Divide Trail and community energy projects",
   "repository": {
     "type": "git",
