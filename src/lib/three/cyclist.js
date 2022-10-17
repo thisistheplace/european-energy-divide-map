@@ -28,7 +28,6 @@ const Box = (props) => {
 }
 
 const Model = (props) => {
-    const [rotation, setRotation] = useState(props.rotation);
     return (
         <>
             <Box />
@@ -36,21 +35,19 @@ const Model = (props) => {
     )
 }
 
-function SpillthebeansThreejs(props) {
+function Cyclist(props) {
     return (
-      <>
-        <Canvas shadows style={{'background':'white'}} camera={{position: [2, 1, 3]}}>
+      <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px"}}>
+        <Canvas shadows style={{'background':'clear'}} camera={{position: [2, 1, 3]}}>
             <perspectiveCamera makeDefault position={[- 500, 500, 1500]} />
             <Lights/>
             <OrbitControls/>
             {/* <axesHelper /> */}
             <Suspense fallback={null}>
-                <Model {...props}/>
-                <Environment preset="warehouse" />
+              <Model {...props}/>
             </Suspense>
         </Canvas>
-        <Loader />
-      </>
+      </div>
     )
 }
 

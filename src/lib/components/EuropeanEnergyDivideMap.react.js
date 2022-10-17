@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {Map} from '../map/map'
 import {EuroMap} from '../map/eurobase'
+import {Cyclist} from '../three/cyclist'
 
 function EuropeanEnergyDivideMap(props) {
     return (
-        <div id={props.id} style={{"height":"100%", "width":"100%"}}>
+        <div id={props.id} style={{"height":"100%", "width":"100%", "position": "relative"}}>
             <EuroMap {...props}/>
+            <Cyclist {...props}/>
         </div>
     )
 }
