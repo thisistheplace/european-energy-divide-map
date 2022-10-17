@@ -25,6 +25,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "@react-leaflet/core": "1.0.2",
+    "@react-three/drei": "^8.20.2",
     "@react-three/fiber": "^7.0.28",
     "copy-webpack-plugin": "^5.1.1",
     "ramda": "^0.26.1",
