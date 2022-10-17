@@ -1,5 +1,5 @@
-import React, { useRef, useState, Suspense } from 'react'
-import { Canvas, useFrame, extend } from '@react-three/fiber'
+import React, { useRef, useState, Suspense, useEffect } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import {Loader, OrbitControls, Environment} from '@react-three/drei'
 
 import {Lights} from '../three/lights'
@@ -36,19 +36,29 @@ const Model = (props) => {
 }
 
 function Cyclist(props) {
-    return (
-      <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px"}}>
-        <Canvas shadows style={{'background':'clear'}} camera={{position: [2, 1, 3]}}>
-            <perspectiveCamera makeDefault position={[- 500, 500, 1500]} />
-            <Lights/>
-            <OrbitControls/>
-            {/* <axesHelper /> */}
-            <Suspense fallback={null}>
-              <Model {...props}/>
-            </Suspense>
-        </Canvas>
-      </div>
-    )
+
+  // useThree(({camera}) => {
+  //   camera.position.set(props.cameraPosition)
+  // }, [props.cameraPosition])
+
+  // useEffect(()=>{
+  //   console.log("child camera")
+    
+  // },[props.cameraPosition])
+
+  return (
+    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "pointerEvents": "none", "width":"100%", "height":"100%"}}>
+      <Canvas shadows style={{'background':'clear'}} camera={{position: [2, 1, 3]}}>
+          <perspectiveCamera makeDefault position={props.cameraPosition} />
+          <Lights/>
+          <OrbitControls/>
+          {/* <axesHelper /> */}
+          <Suspense fallback={null}>
+            <Model {...props}/>
+          </Suspense>
+      </Canvas>
+    </div>
+  )
 }
 
 export {Cyclist}
