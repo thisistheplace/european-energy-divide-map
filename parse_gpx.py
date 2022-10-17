@@ -1,33 +1,43 @@
+from unicodedata import name
 import gpxpy
 import gpxpy.gpx
+
+import geojson
 
 import json
 from pathlib import Path
 from pydantic import BaseModel
 import os
 
-class TrackPoint(BaseModel):
-    latitude: float = ...
-    longitude: float = ...
-    elevation: float = ...
-
 root = Path("gpx").resolve()
 
-points: list[TrackPoint] = []
+routes: list[geojson.Feature] = []
+
 for fname in sorted(os.listdir(root)):
     gpx_path = root / fname
     print(fname)
     with open(gpx_path, "r") as gpx_file:
         gpx = gpxpy.parse(gpx_file)
+        coords = []
         for track in gpx.tracks:
             for segment in track.segments:
                 for point in segment.points:
-                    points.append(
-                        TrackPoint(
-                            latitude=point.latitude,
-                            longitude=point.longitude,
-                            elevation=point.elevation
-                        )
-                    )
+                    coords.append([
+                        point.longitude,
+                        point.latitude,
+                        point.elevation
+                    ])
+        
+        routes.append(
+            geojson.Feature(
+                name=gpx_path.stem.split("-")[-1],
+                geometry=geojson.LineString(coords)
+            )
+        )
 
-json.dump([pnt.dict() for pnt in points], open("assets/route.json", "w"))
+collection = geojson.FeatureCollection(
+    features=routes,
+    name="European Divide Trail"
+)
+
+json.dump(collection, open("assets/route.json", "w"))
