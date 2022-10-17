@@ -1,0 +1,16 @@
+{
+  "src/lib/components/EuropeanEnergyDivideMap.react.js": {
+    "description": "",
+    "displayName": "EuropeanEnergyDivideMap",
+    "methods": [],
+    "props": {
+      "id": {
+        "type": {
+          "name": "string"
+        },
+        "required": true,
+        "description": "The ID used to identify the container for the IFC viewer component."
+      }
+    }
+  }
+}
