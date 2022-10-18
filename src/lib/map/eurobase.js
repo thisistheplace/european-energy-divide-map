@@ -7,6 +7,8 @@ import { Cyclist } from '../three/cyclist'
 const MonitorMapCentre = (props) => {
   const map = useMapEvent('drag', () => {
     const center = map.getCenter()
+    console.log("center", center)
+    console.log(map.latLngToLayerPoint(center))
     props.storeCenter(center)
   })
   return null
@@ -15,7 +17,6 @@ const MonitorMapCentre = (props) => {
 const CalcCameraPosition = (cameraPosition, mapCenter) => {
   const [x, y, z] = cameraPosition
   if (typeof mapCenter === 'object' && !Array.isArray(mapCenter)){
-    console.log(cameraPosition)
     return [x + mapCenter.lat, y + mapCenter.lng, z]
   }
   else {
@@ -25,18 +26,21 @@ const CalcCameraPosition = (cameraPosition, mapCenter) => {
 
 const EuroMap = (props) => {
   const [mapCenter, setMapCenter] = useState(props.mapCenter)
-  const [cameraPosition, setCameraPosition] = useState([- 500, 500, 1500])
+  const [cameraPosition, setCameraPosition] = useState([10, 10, 10])
   const cartodbAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+
+  var southWest = L.latLng(10, -40)
+  var northEast = L.latLng(75, 50)
+  var bounds = L.latLngBounds(southWest, northEast)
 
   useEffect(() => {
     const newPosition = CalcCameraPosition(cameraPosition, mapCenter)
-    console.log("setting camera position")
     setCameraPosition(newPosition)
   }, [mapCenter])
 
   return (
     <>
-      <MapContainer center={props.mapCenter} zoom={4} style={{"height":"100%", "width":"100%"}}>
+      <MapContainer center={props.mapCenter} zoom={4} style={{"height":"100%", "width":"100%"}} maxBounds={bounds}>
         <Pane name="labels" style={{ zIndex: 650, pointerEvents: 'none' }} />
         <TileLayer
           attribution={cartodbAttribution}
@@ -47,9 +51,6 @@ const EuroMap = (props) => {
           url="https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
           pane="labels"
         />
-        {/* {euCountries && (
-          <GeoJSON attribution="test attribution" data={euCountries}/>
-        )} */}
         <EuroStats {...props}/>
         <GpxRoute {...props}/>
         <MonitorMapCentre storeCenter={setMapCenter}/>

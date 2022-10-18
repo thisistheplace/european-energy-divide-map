@@ -9,7 +9,7 @@ class App extends Component {
         super();
         this.state = {
             id: 'test',
-            mapCenter: [47.040182144806664, 9.667968750000002]
+            mapCenter: [56, 15]
         };
         this.setProps = this.setProps.bind(this);
     }

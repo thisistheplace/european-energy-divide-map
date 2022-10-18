@@ -1,8 +1,9 @@
 import React, { useRef, useState, Suspense, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import {Loader, OrbitControls, Environment} from '@react-three/drei'
+import {OrbitControls, PerspectiveCamera} from '@react-three/drei'
 
 import {Lights} from '../three/lights'
+import {UpdateCamera} from '../three/camera'
 
 const Box = (props) => {
   // This reference gives us direct access to the THREE.Mesh object
@@ -36,7 +37,6 @@ const Model = (props) => {
 }
 
 function Cyclist(props) {
-
   // useThree(({camera}) => {
   //   camera.position.set(props.cameraPosition)
   // }, [props.cameraPosition])
@@ -48,8 +48,8 @@ function Cyclist(props) {
 
   return (
     <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "pointerEvents": "none", "width":"100%", "height":"100%"}}>
-      <Canvas shadows style={{'background':'clear'}} camera={{position: [2, 1, 3]}}>
-          <perspectiveCamera makeDefault position={props.cameraPosition} />
+      <Canvas shadows style={{'background':'clear'}} camera={{position: props.cameraPosition}}>
+          <UpdateCamera {...props}/>
           <Lights/>
           <OrbitControls/>
           {/* <axesHelper /> */}

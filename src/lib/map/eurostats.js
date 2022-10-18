@@ -6,7 +6,6 @@ const EuroStats = (props) => {
   const [euroStatData, setEuroStatData] = useState()
 
   const interceptData = (data) => {
-    console.log(data)
     setEuroStatData(data)
   }
 
