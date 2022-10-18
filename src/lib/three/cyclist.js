@@ -4,6 +4,7 @@ import {OrbitControls, OrthographicCamera} from '@react-three/drei'
 
 import {Lights} from '../three/lights'
 import { UpdateCamera, Camera } from './camera'
+import { Controls } from './controls'
 
 const Box = (props) => {
   // This reference gives us direct access to the THREE.Mesh object
@@ -12,7 +13,7 @@ const Box = (props) => {
   const [hovered, hover] = useState(false)
   const [clicked, click] = useState(false)
   // Subscribe this component to the render-loop, rotate the mesh every frame
-  useFrame((state, delta) => (ref.current.rotation.x += 0.01))
+  // useFrame((state, delta) => (ref.current.rotation.x += 0.01))
   useEffect(() => {
     if (ref.current && props.position) {
       const [x, y, z] = props.position
@@ -46,19 +47,22 @@ const Model = (props) => {
 const Cyclist = (props) => {
   const [modelPosition, setModelPosition] = useState([props.modelPosition.x, props.modelPosition.y, 0])
   const [cameraPosition, setCameraPosition] = useState([props.cameraPosition.x, props.cameraPosition.y, 500])
+  const [targetPosition, setTargetPosition] = useState([props.cameraPosition.x, props.cameraPosition.y, 0])
 
   useEffect(() => {
+    
     setCameraPosition([props.cameraPosition.x, props.cameraPosition.y, 500 / props.zoom])
+    setTargetPosition([props.cameraPosition.x, props.cameraPosition.y, 0])
+
+    console.log(props.zoom, cameraPosition, targetPosition)
   }, [props.cameraPosition, props.zoom])
 
   return (
     <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents": "none"}}>
       <Canvas shadows style={{'background':'clear'}}>
-          {/* <OrthographicCamera makeDefault position={cameraPosition}/> */}
-          {/* <UpdateCamera position={cameraPosition}/> */}
-          <Camera position={cameraPosition} lookAt={modelPosition}/>
+          <Camera position={cameraPosition}/>
+          <Controls target={targetPosition}/>
           <Lights/>
-          <OrbitControls/>
           <axesHelper />
           <Suspense fallback={null}>
             <Model position={modelPosition}/>
