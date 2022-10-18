@@ -3,7 +3,6 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import {OrbitControls, PerspectiveCamera} from '@react-three/drei'
 
 import {Lights} from '../three/lights'
-import {UpdateCamera} from '../three/camera'
 
 const Box = (props) => {
   // This reference gives us direct access to the THREE.Mesh object
@@ -13,6 +12,12 @@ const Box = (props) => {
   const [clicked, click] = useState(false)
   // Subscribe this component to the render-loop, rotate the mesh every frame
   useFrame((state, delta) => (ref.current.rotation.x += 0.01))
+  useEffect(() => {
+    console.log(props)
+    if (ref.current && props.position) {
+      ref.current.position.set(props.position.x, props.position.y, ref.current.position.z)
+    }
+  }, [props.position])
   // Return the view, these are regular Threejs elements expressed in JSX
   return (
     <mesh
@@ -31,34 +36,24 @@ const Box = (props) => {
 const Model = (props) => {
     return (
         <>
-            <Box />
+            <Box position={props.position}/>
         </>
     )
 }
 
-function Cyclist(props) {
-  // useThree(({camera}) => {
-  //   camera.position.set(props.cameraPosition)
-  // }, [props.cameraPosition])
-
-  // useEffect(()=>{
-  //   console.log("child camera")
-    
-  // },[props.cameraPosition])
-
+const Cyclist = (props) => {
   return (
     <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "pointerEvents": "none", "width":"100%", "height":"100%"}}>
-      <Canvas shadows style={{'background':'clear'}} camera={{position: props.cameraPosition}}>
-          <UpdateCamera {...props}/>
+      <Canvas shadows style={{'background':'clear'}}>
           <Lights/>
           <OrbitControls/>
-          {/* <axesHelper /> */}
+          <axesHelper />
           <Suspense fallback={null}>
-            <Model {...props}/>
+            <Model position={props.position}/>
           </Suspense>
       </Canvas>
     </div>
   )
 }
 
-export {Cyclist}
+export { Cyclist }

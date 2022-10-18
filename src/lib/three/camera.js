@@ -6,7 +6,7 @@ const UpdateCamera = (props) => {
   const {camera} = useThree()
 
   useEffect(() => {
-    if (camera != null){
+    if (props.cameraPosition != null){
       const [x, y, z] = props.cameraPosition
       camera.position.set(x, y, z)
     }
