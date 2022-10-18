@@ -8,7 +8,6 @@ function EuropeanEnergyDivideMap(props) {
     return (
         <div id={props.id} style={{"height":"100%", "width":"100%", "position": "relative"}}>
             <EuroMap {...props}/>
-            {/* <Cyclist {...props}/> */}
         </div>
     )
 }
@@ -22,7 +21,7 @@ EuropeanEnergyDivideMap.propTypes = {
      * The ID used to identify the container for the IFC viewer component.
      */
     id: PropTypes.string.isRequired,
-    mapCenter: PropTypes.arrayOf(PropTypes.number).isRequired
+    mapCenter: PropTypes.object.isRequired
 };
 
 export default EuropeanEnergyDivideMap;

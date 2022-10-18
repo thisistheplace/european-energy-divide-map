@@ -1,8 +1,9 @@
 import React, { useRef, useState, Suspense, useEffect } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import {OrbitControls, PerspectiveCamera} from '@react-three/drei'
+import { Canvas, useFrame } from '@react-three/fiber'
+import {OrbitControls, OrthographicCamera} from '@react-three/drei'
 
 import {Lights} from '../three/lights'
+import { UpdateCamera, Camera } from './camera'
 
 const Box = (props) => {
   // This reference gives us direct access to the THREE.Mesh object
@@ -13,15 +14,15 @@ const Box = (props) => {
   // Subscribe this component to the render-loop, rotate the mesh every frame
   useFrame((state, delta) => (ref.current.rotation.x += 0.01))
   useEffect(() => {
-    console.log(props)
     if (ref.current && props.position) {
-      ref.current.position.set(props.position.x, props.position.y, ref.current.position.z)
+      const [x, y, z] = props.position
+      ref.current.position.set(x, y, z)
     }
   }, [props.position])
   // Return the view, these are regular Threejs elements expressed in JSX
   return (
     <mesh
-      {...props}
+      // {...props}
       ref={ref}
       scale={clicked ? 1.5 : 1}
       onClick={(event) => click(!clicked)}
@@ -37,19 +38,30 @@ const Model = (props) => {
     return (
         <>
             <Box position={props.position}/>
+            <Box position={[0., 0., 0.]}/>
         </>
     )
 }
 
 const Cyclist = (props) => {
+  const [modelPosition, setModelPosition] = useState([props.modelPosition.x, props.modelPosition.y, 0])
+  const [cameraPosition, setCameraPosition] = useState([props.cameraPosition.x, props.cameraPosition.y, 500])
+
+  useEffect(() => {
+    setCameraPosition([props.cameraPosition.x, props.cameraPosition.y, 500 / props.zoom])
+  }, [props.cameraPosition, props.zoom])
+
   return (
-    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "pointerEvents": "none", "width":"100%", "height":"100%"}}>
+    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents": "none"}}>
       <Canvas shadows style={{'background':'clear'}}>
+          {/* <OrthographicCamera makeDefault position={cameraPosition}/> */}
+          {/* <UpdateCamera position={cameraPosition}/> */}
+          <Camera position={cameraPosition} lookAt={modelPosition}/>
           <Lights/>
           <OrbitControls/>
           <axesHelper />
           <Suspense fallback={null}>
-            <Model position={props.position}/>
+            <Model position={modelPosition}/>
           </Suspense>
       </Canvas>
     </div>
