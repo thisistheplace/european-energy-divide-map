@@ -1,10 +1,11 @@
 import React, { useRef, useState, Suspense, useEffect } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import {OrbitControls, OrthographicCamera} from '@react-three/drei'
 
 import {Lights} from '../three/lights'
 import { UpdateCamera, Camera } from './camera'
 import { Controls } from './controls'
+import { bounds } from 'leaflet'
 
 const Box = (props) => {
   // This reference gives us direct access to the THREE.Mesh object
@@ -29,7 +30,7 @@ const Box = (props) => {
       onClick={(event) => click(!clicked)}
       onPointerOver={(event) => hover(true)}
       onPointerOut={(event) => hover(false)}>
-      <boxGeometry args={[1, 1, 1]} />
+      <boxGeometry args={[100, 100, 100]} />
       <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
     </mesh>
   )
@@ -38,34 +39,49 @@ const Box = (props) => {
 const Model = (props) => {
     return (
         <>
-            <Box position={props.position}/>
+            {/* <Box position={props.position}/> */}
             <Box position={[0., 0., 0.]}/>
         </>
     )
 }
 
+const ResizeRenderer = (props) => {
+  const {gl} = useThree()
+  useEffect(() => {
+    gl.setSize(props.size.x, props.size.y)
+    console.log("set renderer size")
+  }, [props.size])
+  return null
+}
+
 const Cyclist = (props) => {
-  const [modelPosition, setModelPosition] = useState([props.modelPosition.x, props.modelPosition.y, 0])
-  const [cameraPosition, setCameraPosition] = useState([props.cameraPosition.x, props.cameraPosition.y, 500])
-  const [targetPosition, setTargetPosition] = useState([props.cameraPosition.x, props.cameraPosition.y, 0])
+  const [position, setPosition] = useState([props.position.x, props.position.y, 0])
+  const [renderSize, setRenderSize] = useState({x:0, y:0})
 
   useEffect(() => {
-    
-    setCameraPosition([props.cameraPosition.x, props.cameraPosition.y, 500 / props.zoom])
-    setTargetPosition([props.cameraPosition.x, props.cameraPosition.y, 0])
+    setPosition([props.position.x, props.position.y, 0.])
+    // console.log(position)
+  }, [props.position])
 
-    console.log(props.zoom, cameraPosition, targetPosition)
-  }, [props.cameraPosition, props.zoom])
+  useEffect(() => {
+    if (props.bounds){
+      const x = props.bounds.max.x - props.bounds.min.x
+      const y = props.bounds.max.y - props.bounds.min.y
+      console.log(x, y)
+      setRenderSize({x: x, y: y})
+    }
+  }, [props.bounds])
 
   return (
-    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents": "none"}}>
+    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents":"none"}}>
       <Canvas shadows style={{'background':'clear'}}>
-          <Camera position={cameraPosition}/>
-          <Controls target={targetPosition}/>
           <Lights/>
+          {/* <Camera position={position}/> */}
+          {/* <OrbitControls/> */}
+          <ResizeRenderer size={renderSize}/>
           <axesHelper />
           <Suspense fallback={null}>
-            <Model position={modelPosition}/>
+            <Model position={position}/>
           </Suspense>
       </Canvas>
     </div>

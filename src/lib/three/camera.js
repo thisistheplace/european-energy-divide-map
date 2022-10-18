@@ -6,7 +6,6 @@ import * as THREE from 'three'
 extend(THREE)
 
 function Camera(props) {
-  
   const ref = useRef()
   const set = useThree((state) => state.set)
   // This makes sure that size-related calculations are proper
