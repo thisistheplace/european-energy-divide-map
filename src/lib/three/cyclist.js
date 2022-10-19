@@ -1,6 +1,9 @@
 import React, { useRef, useState, Suspense, useEffect } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { extend, Canvas, useFrame, useThree } from '@react-three/fiber'
 import {OrbitControls, OrthographicCamera} from '@react-three/drei'
+import * as THREE from 'three'
+extend(THREE)
+
 
 import {Lights} from '../three/lights'
 import { UpdateCamera, Camera } from './camera'
@@ -30,7 +33,7 @@ const Box = (props) => {
       onClick={(event) => click(!clicked)}
       onPointerOver={(event) => hover(true)}
       onPointerOut={(event) => hover(false)}>
-      <boxGeometry args={[100, 100, 100]} />
+      <boxGeometry args={[10, 10, 10]} />
       <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
     </mesh>
   )
@@ -39,8 +42,8 @@ const Box = (props) => {
 const Model = (props) => {
     return (
         <>
-            {/* <Box position={props.position}/> */}
-            <Box position={[0., 0., 0.]}/>
+            <Box position={props.position}/>
+            {/* <Box position={[0., 0., 0.]}/> */}
         </>
     )
 }
@@ -49,18 +52,17 @@ const ResizeRenderer = (props) => {
   const {gl} = useThree()
   useEffect(() => {
     gl.setSize(props.size.x, props.size.y)
-    console.log("set renderer size")
   }, [props.size])
   return null
 }
 
 const Cyclist = (props) => {
-  const [position, setPosition] = useState([props.position.x, props.position.y, 0])
+  const [position, setPosition] = useState([props.position.x, props.position.y, -5])
   const [renderSize, setRenderSize] = useState({x:0, y:0})
 
   useEffect(() => {
-    setPosition([props.position.x, props.position.y, 0.])
-    // console.log(position)
+    setPosition([props.position.x, props.position.y, -5])
+    console.log(position)
   }, [props.position])
 
   useEffect(() => {
@@ -73,16 +75,18 @@ const Cyclist = (props) => {
   }, [props.bounds])
 
   return (
-    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents":"none"}}>
+    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%"}}>
       <Canvas shadows style={{'background':'clear'}}>
           <Lights/>
           {/* <Camera position={position}/> */}
-          {/* <OrbitControls/> */}
-          <ResizeRenderer size={renderSize}/>
+          <OrbitControls/>
+          {/* <ResizeRenderer size={renderSize}/> */}
           <axesHelper />
+          <OrthographicCamera makeDefault position={position}>
           <Suspense fallback={null}>
             <Model position={position}/>
           </Suspense>
+          </OrthographicCamera>
       </Canvas>
     </div>
   )

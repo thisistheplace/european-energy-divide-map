@@ -65,7 +65,7 @@ const EuroMap = (props) => {
         <Marker position={markerPosition}/>
         <Marker position={{lat: 0., lng: 0.}}/>
       </MapContainer>
-      <Cyclist center={mapCenter} position={{x: 10, y: 10}} bounds={bounds}/>
+      <Cyclist center={mapCenter} position={mapCenter} bounds={bounds}/>
     </>
   )
 }
