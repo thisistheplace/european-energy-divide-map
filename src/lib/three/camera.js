@@ -1,5 +1,5 @@
 import React, {useRef, useEffect, useState} from 'react';
-import {extend, useThree} from '@react-three/fiber'
+import {extend, useFrame, useThree} from '@react-three/fiber'
 import { OrthographicCamera } from '@react-three/drei'
 import * as THREE from 'three'
 
@@ -14,13 +14,11 @@ function Camera(props) {
     set({ camera: ref.current })
   }, [])
 
-  return <orthographicCamera ref={ref} {...props}/>
+  return <OrthographicCamera ref={ref} {...props}/>
 }
 
 const UpdateCamera = (props) => {
-  
   const {camera} = useThree()
-
   useEffect(() => {
     if (props.position != null){
       const [x, y, z] = props.position

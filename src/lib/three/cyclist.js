@@ -1,14 +1,11 @@
 import React, { useRef, useState, Suspense, useEffect } from 'react'
 import { extend, Canvas, useFrame, useThree } from '@react-three/fiber'
-import {OrbitControls, OrthographicCamera} from '@react-three/drei'
+import {OrbitControls, Line} from '@react-three/drei'
 import * as THREE from 'three'
 extend(THREE)
 
-
 import {Lights} from '../three/lights'
-import { UpdateCamera, Camera } from './camera'
-import { Controls } from './controls'
-import { bounds } from 'leaflet'
+import { Camera } from './camera'
 
 const Box = (props) => {
   // This reference gives us direct access to the THREE.Mesh object
@@ -39,13 +36,29 @@ const Box = (props) => {
   )
 }
 
+const Route = (props) => {
+  const [points, setPoints] = useState([[0, 0, 0], [0, 0, 0]])
+
+  useEffect(() => {
+    if (props.data){
+      console.log("making geometry")
+      console.log(props.data)
+      setPoints(props.data)
+    }
+  }, [props.data])
+
+  return (<Line
+    points={points}
+  />)
+}
+
 const Model = (props) => {
-    return (
-        <>
-            <Box position={props.position}/>
-            {/* <Box position={[0., 0., 0.]}/> */}
-        </>
-    )
+  return (
+      <>
+          {/* <Box position={props.position}/> */}
+          <Route data={props.routeData}/>
+      </>
+  )
 }
 
 const ResizeRenderer = (props) => {
@@ -58,11 +71,15 @@ const ResizeRenderer = (props) => {
 
 const Cyclist = (props) => {
   const [position, setPosition] = useState([props.position.x, props.position.y, -5])
+  const [cameraPosition, setCameraPosition] = useState([props.position.x, props.position.y, 50])
+  const [target, setTarget] = useState(new THREE.Vector3(position[0], position[1], position[2]))
   const [renderSize, setRenderSize] = useState({x:0, y:0})
+
 
   useEffect(() => {
     setPosition([props.position.x, props.position.y, -5])
-    console.log(position)
+    setCameraPosition([props.position.x, props.position.y, 5000])
+    setTarget(new THREE.Vector3(position[0], position[1], position[2]))
   }, [props.position])
 
   useEffect(() => {
@@ -78,15 +95,24 @@ const Cyclist = (props) => {
     <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%"}}>
       <Canvas shadows style={{'background':'clear'}}>
           <Lights/>
-          {/* <Camera position={position}/> */}
+          <Camera
+            position={cameraPosition}
+            target={target}
+            left={renderSize.x / -2}
+            right={renderSize.x / 2}
+            top={renderSize.y / 2}
+            bottom={renderSize.y / -2}
+            near={1}
+            far={10000}
+          />
           <OrbitControls/>
           {/* <ResizeRenderer size={renderSize}/> */}
           <axesHelper />
-          <OrthographicCamera makeDefault position={position}>
+          {/* <OrthographicCamera makeDefault position={position}> */}
           <Suspense fallback={null}>
-            <Model position={position}/>
+            <Model position={position} routeData={props.routeData}/>
           </Suspense>
-          </OrthographicCamera>
+          {/* </OrthographicCamera> */}
       </Canvas>
     </div>
   )

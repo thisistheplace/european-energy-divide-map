@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { MapContainer, TileLayer, Pane, useMapEvents, Marker } from 'react-leaflet'
+import { MapContainer, TileLayer, Pane, useMap, useMapEvents, Marker } from 'react-leaflet'
+
+import { extend } from '@react-three/fiber'
+import * as THREE from 'three'
+extend(THREE)
+
 import { GpxRoute } from './gpx.js'
 import { EuroStats } from './eurostats.js'
 import { Cyclist } from '../three/cyclist'
+
 
 const MonitorMapCentre = (props) => {
   const map = useMapEvents({
@@ -34,16 +40,40 @@ const EuroMap = (props) => {
   const [markerPosition, setMarkerPosition] = useState({lat: props.mapCenter.x, lng: props.mapCenter.y})
   const [mapCenter, setMapCenter] = useState(props.mapCenter)
   const [bounds, setBounds] = useState()
+  const [routeData, setRouteData] = useState()
   const cartodbAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>'
 
   const SaveBounds = (map) => {
     setBounds(map.getPixelBounds())
   }
 
+  const passLoadedData = (map, data) => {
+    console.log(mapCenter)
+    const threeRoute = []
+    const zAxis = new THREE.Vector3(0, 0, 1)
+    // Get last point in segment 2
+    const originLatLng = data.features[1].geometry.coordinates.slice(0)[0]
+    const origin = map.latLngToContainerPoint({lat: originLatLng[0], lng: originLatLng[1]})
+    console.log(origin)
+    const trans = new THREE.Vector3(origin.y, -origin.x, 0.)
+    for (const feature of data.features){
+      for (const coord of feature.geometry.coordinates){
+        const xy = map.latLngToContainerPoint({lat: coord[0], lng: coord[1]})
+          threeRoute.push(
+            new THREE.Vector3(
+              xy.x,
+              xy.y,
+              coord[2]
+            ).applyAxisAngle(zAxis, Math.PI / 2)
+            .add(trans)
+          )
+      }
+    }
+    setRouteData(threeRoute)
+  }
+
   var southWest = L.latLng(30, -40)
   var northEast = L.latLng(72, 50)
-  // var southWest = L.latLng(-90, 90)
-  // var northEast = L.latLng(90, -90)
   var maxBounds = L.latLngBounds(southWest, northEast)
 
   return (
@@ -60,12 +90,13 @@ const EuroMap = (props) => {
           pane="labels"
         />
         <EuroStats {...props}/>
-        <GpxRoute {...props}/>
+        <GpxRoute {...props} passLoadedData={passLoadedData}/>
         <MonitorMapCentre storeCenter={setMapCenter} storeMarker={setMarkerPosition} storeBounds={setBounds}/>
         <Marker position={markerPosition}/>
         <Marker position={{lat: 0., lng: 0.}}/>
       </MapContainer>
-      <Cyclist center={mapCenter} position={mapCenter} bounds={bounds}/>
+      {/* <Cyclist center={mapCenter} position={mapCenter} bounds={bounds}/> */}
+      <Cyclist center={mapCenter} position={{x: 0, y: 0}} bounds={bounds} routeData={routeData}/>
     </>
   )
 }
