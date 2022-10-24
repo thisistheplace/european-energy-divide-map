@@ -92,7 +92,7 @@ const Cyclist = (props) => {
   }, [props.bounds])
 
   return (
-    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%"}}>
+    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents": "none"}}>
       <Canvas shadows style={{'background':'clear'}}>
           <Lights/>
           <Camera

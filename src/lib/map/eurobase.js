@@ -54,6 +54,7 @@ const EuroMap = (props) => {
     // Get last point in segment 2
     const originLatLng = data.features[1].geometry.coordinates.slice(0)[0]
     const origin = map.latLngToContainerPoint({lat: originLatLng[0], lng: originLatLng[1]})
+    setMapCenter(map.latLngToLayerPoint({lat: originLatLng[0], lng: originLatLng[1]}))
     console.log(origin)
     const trans = new THREE.Vector3(origin.y, -origin.x, 0.)
     for (const feature of data.features){
@@ -73,7 +74,7 @@ const EuroMap = (props) => {
   }
 
   var southWest = L.latLng(30, -40)
-  var northEast = L.latLng(72, 50)
+  var northEast = L.latLng(72, 60)
   var maxBounds = L.latLngBounds(southWest, northEast)
 
   return (
