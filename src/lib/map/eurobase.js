@@ -14,21 +14,22 @@ const MonitorMapCentre = (props) => {
   const map = useMapEvents({
     drag: () => {
       const center = map.getCenter()
-      props.storeCenter(map.latLngToLayerPoint(center))
+      const centerCoords = map.latLngToLayerPoint(center)
+      props.storeCenter({x: centerCoords.x, y: centerCoords.y})
       props.storeMarker(center)
       // props.storeBounds(map.getPixelBounds())
     },
     dragend: () => {
       const center = map.getCenter()
-      console.log(map.latLngToLayerPoint(center))
-      console.log(map.getPixelBounds())
-      props.storeCenter(map.latLngToLayerPoint(center))
+      const centerCoords = map.latLngToLayerPoint(center)
+      props.storeCenter({x: centerCoords.x, y: centerCoords.y})
       props.storeMarker(center)
       // props.storeBounds(map.getPixelBounds())
     },
     zoom: () => {
       const center = map.getCenter()
-      props.storeCenter(map.latLngToLayerPoint(center))
+      const centerCoords = map.latLngToLayerPoint(center)
+      props.storeCenter({x: centerCoords.x, y: centerCoords.y})
       props.storeMarker(center)
       // props.storeBounds(map.getPixelBounds())
     }
@@ -48,14 +49,11 @@ const EuroMap = (props) => {
   }
 
   const passLoadedData = (map, data) => {
-    console.log(mapCenter)
     const threeRoute = []
     const zAxis = new THREE.Vector3(0, 0, 1)
     // Get last point in segment 2
     const originLatLng = data.features[1].geometry.coordinates.slice(0)[0]
     const origin = map.latLngToContainerPoint({lat: originLatLng[0], lng: originLatLng[1]})
-    setMapCenter(map.latLngToLayerPoint({lat: originLatLng[0], lng: originLatLng[1]}))
-    console.log(origin)
     const trans = new THREE.Vector3(origin.y, -origin.x, 0.)
     for (const feature of data.features){
       for (const coord of feature.geometry.coordinates){
@@ -97,7 +95,7 @@ const EuroMap = (props) => {
         <Marker position={{lat: 0., lng: 0.}}/>
       </MapContainer>
       {/* <Cyclist center={mapCenter} position={mapCenter} bounds={bounds}/> */}
-      <Cyclist center={mapCenter} position={{x: 0, y: 0}} bounds={bounds} routeData={routeData}/>
+      <Cyclist center={mapCenter} position={new THREE.Vector3(0, 0, 0)} bounds={bounds} routeData={routeData}/>
     </>
   )
 }

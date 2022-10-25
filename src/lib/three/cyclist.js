@@ -1,6 +1,6 @@
-import React, { useRef, useState, Suspense, useEffect } from 'react'
+import React, { useRef, useState, Suspense, useEffect, useLayoutEffect } from 'react'
 import { extend, Canvas, useFrame, useThree } from '@react-three/fiber'
-import {OrbitControls, Line} from '@react-three/drei'
+import {OrbitControls} from '@react-three/drei'
 import * as THREE from 'three'
 extend(THREE)
 
@@ -36,27 +36,51 @@ const Box = (props) => {
   )
 }
 
+function Line(props) {
+  const ref = useRef()
+
+  useEffect(() => {
+    console.log("updating geom")
+    ref.current.geometry.setFromPoints(props.points)
+  }, [props.update])
+
+  return (
+    <line ref={ref}>
+      <bufferGeometry />
+      <lineBasicMaterial color="hotpink" />
+    </line>
+  )
+}
+
 const Route = (props) => {
-  const [points, setPoints] = useState([[0, 0, 0], [0, 0, 0]])
+  const [points, setPoints] = useState([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0)])
+  const [update, setUpdate] = useState(false)
 
   useEffect(() => {
     if (props.data){
-      console.log("making geometry")
-      console.log(props.data)
+      props.data.forEach(element => {
+        element.add(props.change)
+      });
+      console.log(props.data[0])
+      console.log("setting points")
       setPoints(props.data)
+      setUpdate(!update)
     }
-  }, [props.data])
+  }, [props.data, props.change])
 
-  return (<Line
+  // useFrame
+
+  return <Line
     points={points}
-  />)
+    update={update}
+  />
 }
 
 const Model = (props) => {
   return (
       <>
           {/* <Box position={props.position}/> */}
-          <Route data={props.routeData}/>
+          <Route data={props.routeData} change={props.change}/>
       </>
   )
 }
@@ -70,26 +94,35 @@ const ResizeRenderer = (props) => {
 }
 
 const Cyclist = (props) => {
-  const [position, setPosition] = useState([props.position.x, props.position.y, -5])
-  const [cameraPosition, setCameraPosition] = useState([props.position.x, props.position.y, 50])
+  const [position, setPosition] = useState(props.position)
+  const [changePosition, setChangePosition] = useState(new THREE.Vector3(0, 0, 0))
+  const [center, setCenter] = useState(props.center)
+  const [cameraPosition, setCameraPosition] = useState([props.position.x, props.position.y, 2000])
   const [target, setTarget] = useState(new THREE.Vector3(position[0], position[1], position[2]))
   const [renderSize, setRenderSize] = useState({x:0, y:0})
-
-
-  useEffect(() => {
-    setPosition([props.position.x, props.position.y, -5])
-    setCameraPosition([props.position.x, props.position.y, 5000])
-    setTarget(new THREE.Vector3(position[0], position[1], position[2]))
-  }, [props.position])
 
   useEffect(() => {
     if (props.bounds){
       const x = props.bounds.max.x - props.bounds.min.x
       const y = props.bounds.max.y - props.bounds.min.y
-      console.log(x, y)
+      // console.log(x, y)
       setRenderSize({x: x, y: y})
     }
   }, [props.bounds])
+
+  useEffect(() => {
+    // console.log(props.center, center)
+    const change = {x: props.center.x - center.x, y: props.center.y - center.y}
+    // console.log("change:", change)
+    // setCameraPosition([cameraPosition[0] + change.x, cameraPosition[1] + change.y, cameraPosition[2]])
+    changePosition.x = change.x
+    changePosition.y = change.y
+    setChangePosition(new THREE.Vector3().copy(changePosition))
+    // console.log("position:", position)
+    // console.log("changePosition:", changePosition)
+    // setTarget(new THREE.Vector3(target.x + change.x, target.y + change.y, target.z))
+    setCenter(props.center)
+  }, [props.center])
 
   return (
     <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents": "none"}}>
@@ -110,7 +143,7 @@ const Cyclist = (props) => {
           <axesHelper />
           {/* <OrthographicCamera makeDefault position={position}> */}
           <Suspense fallback={null}>
-            <Model position={position} routeData={props.routeData}/>
+            <Model routeData={props.routeData} change={changePosition}/>
           </Suspense>
           {/* </OrthographicCamera> */}
       </Canvas>
