@@ -22,8 +22,8 @@ for fname in sorted(os.listdir(root)):
             for segment in track.segments:
                 for point in segment.points:
                     coords.append([
-                        point.longitude,
                         point.latitude,
+                        point.longitude,
                         point.elevation
                     ])
         

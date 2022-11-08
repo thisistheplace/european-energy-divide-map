@@ -40,7 +40,7 @@ function Line(props) {
   const ref = useRef()
 
   useEffect(() => {
-    console.log("updating geom")
+    // console.log("updating geom")
     ref.current.geometry.setFromPoints(props.points)
   }, [props.update])
 
@@ -61,12 +61,12 @@ const Route = (props) => {
       props.data.forEach(element => {
         element.add(props.change)
       });
-      console.log(props.data[0])
-      console.log("setting points")
+      // console.log(props.data[0])
+      // console.log("setting points")
       setPoints(props.data)
       setUpdate(!update)
     }
-  }, [props.data, props.change])
+  }, [props.data])
 
   // useFrame
 
@@ -122,7 +122,14 @@ const Cyclist = (props) => {
     // console.log("changePosition:", changePosition)
     // setTarget(new THREE.Vector3(target.x + change.x, target.y + change.y, target.z))
     setCenter(props.center)
+    console.log('renderSize:', renderSize)
   }, [props.center])
+
+  // useEffect(() => {
+  //   setCameraPosition()
+  // })
+
+  // console.log(renderSize)
 
   return (
     <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents": "none"}}>
@@ -136,7 +143,7 @@ const Cyclist = (props) => {
             top={renderSize.y / 2}
             bottom={renderSize.y / -2}
             near={1}
-            far={10000}
+            far={1000000}
           />
           <OrbitControls/>
           {/* <ResizeRenderer size={renderSize}/> */}
