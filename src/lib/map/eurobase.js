@@ -42,7 +42,7 @@ const EuroMap = (props) => {
   const [mapCenter, setMapCenter] = useState(props.mapCenter)
   const [bounds, setBounds] = useState()
   const [routeData, setRouteData] = useState()
-  const cartodbAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+  const cartodbAttribution = 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 
   const SaveBounds = (map) => {
     setBounds(map.getPixelBounds())
@@ -79,15 +79,19 @@ const EuroMap = (props) => {
     <>
       <MapContainer center={[props.mapCenter.x, props.mapCenter.y]} whenCreated={SaveBounds} zoomSnap={0.5} minZoom={1} zoom={4} style={{"height":"100%", "width":"100%"}} maxBounds={maxBounds} maxBoundsViscosity={1.}>
         <Pane name="labels" style={{ zIndex: 650, pointerEvents: 'none' }} />
-        <TileLayer
+        {/* <TileLayer
           attribution={cartodbAttribution}
           url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png"
-        />
+        /> */}
         <TileLayer
+          attribution={cartodbAttribution}
+          url="https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png"
+        />
+        {/* <TileLayer
           attribution={cartodbAttribution}
           url="https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png"
           pane="labels"
-        />
+        /> */}
         <EuroStats {...props}/>
         <GpxRoute {...props} passLoadedData={passLoadedData}/>
         <MonitorMapCentre storeCenter={setMapCenter} storeMarker={setMarkerPosition} storeBounds={setBounds}/>

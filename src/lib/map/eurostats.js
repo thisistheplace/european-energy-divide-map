@@ -16,7 +16,7 @@ const EuroStats = (props) => {
   return (
     <>
       {euroStatData && (
-        <GeoJSON attribution="https://ec.europa.eu/eurostat" data={euroStatData} style={{color: "blue", weight: 0.2}}/>
+        <GeoJSON attribution="https://ec.europa.eu/eurostat" data={euroStatData} style={{color: "yellow", weight: 0.2}}/>
       )}
     </>
   )
