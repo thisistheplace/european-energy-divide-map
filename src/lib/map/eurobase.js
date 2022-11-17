@@ -13,28 +13,29 @@ import { Cyclist } from '../three/cyclist'
 const MonitorMapCentre = (props) => {
   const map = useMapEvents({
     click: () => {
-      console.log("loaded")
-      console.log(map.getBounds())
-      console.log(map.getPixelBounds())
-      console.log(map.latLngToLayerPoint(map.getBounds()._southWest))
-      console.log(map.latLngToLayerPoint(map.getBounds()._northEast))
-      console.log(map.latLngToContainerPoint(map.getBounds()._southWest))
-      console.log(map.latLngToContainerPoint(map.getBounds()._northEast))
+      // console.log("loaded")
+      // console.log(map.getBounds())
+      // console.log(map.getPixelBounds())
+      // console.log(map.latLngToLayerPoint(map.getBounds()._southWest))
+      // console.log(map.latLngToLayerPoint(map.getBounds()._northEast))
+      // console.log(map.latLngToContainerPoint(map.getBounds()._southWest))
+      // console.log(map.latLngToContainerPoint(map.getBounds()._northEast))
       const northEast = map.getBounds()._northEast
       const southWest = map.getBounds()._southWest
       const northWest = map.getBounds()._northEast
       northWest.lat = southWest.lat
       const southEast = map.getBounds()._southWest
       southEast.lng = northEast.lng
-      console.log(southEast, northWest)
-      console.log(map.distance(southEast, northEast))
-      console.log(map.distance(southEast, southWest))
+      // console.log(southEast, northWest)
+      // console.log(map.distance(southEast, northEast))
+      // console.log(map.distance(southEast, southWest))
 
       props.storeNorthEast(northEast)
       props.storeSouthWest(southWest)
     },
     drag: () => {
       const center = map.getCenter()
+      props.storeLatLngCenter(center)
       const centerCoords = map.latLngToLayerPoint(center)
       props.storeCenter({x: centerCoords.x, y: centerCoords.y})
       props.storeMarker(center)
@@ -43,6 +44,7 @@ const MonitorMapCentre = (props) => {
     dragend: () => {
       // console.log(map)
       const center = map.getCenter()
+      props.storeLatLngCenter(center)
       const centerCoords = map.latLngToLayerPoint(center)
       props.storeCenter({x: centerCoords.x, y: centerCoords.y})
       props.storeMarker(center)
@@ -53,6 +55,7 @@ const MonitorMapCentre = (props) => {
     },
     zoom: () => {
       const center = map.getCenter()
+      props.storeLatLngCenter(center)
       const centerCoords = map.latLngToLayerPoint(center)
       props.storeCenter({x: centerCoords.x, y: centerCoords.y})
       props.storeMarker(center)
@@ -63,16 +66,45 @@ const MonitorMapCentre = (props) => {
 }
 
 const EuroMap = (props) => {
-  const [markerPosition, setMarkerPosition] = useState({lat: props.mapCenter.x, lng: props.mapCenter.y})
-  const [markerSouthWest, setMarkerSouthWest] = useState({lat: props.mapCenter.x, lng: props.mapCenter.y})
-  const [markerNorthEast, setMarkerNorthEast] = useState({lat: props.mapCenter.x, lng: props.mapCenter.y})
+  const [markerPosition, setMarkerPosition] = useState({lat: props.mapCenter.y, lng: props.mapCenter.x})
+  const [markerSouthWest, setMarkerSouthWest] = useState({lat: props.mapCenter.y, lng: props.mapCenter.x})
+  const [markerNorthEast, setMarkerNorthEast] = useState({lat: props.mapCenter.y, lng: props.mapCenter.x})
+  const [mapLatLngCenter, setMapLatLngCenter] = useState({lat: props.mapCenter.y, lng: props.mapCenter.x})
   const [mapCenter, setMapCenter] = useState(props.mapCenter)
   const [bounds, setBounds] = useState()
   const [routeData, setRouteData] = useState()
   const cartodbAttribution = 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 
   const SaveBounds = (map) => {
-    setBounds(map.getPixelBounds())
+    const origin = new L.latLng(0, 0)
+
+    var centerXCalc = map.getCenter()
+    centerXCalc.lng = 0
+    const centerX = map.distance(centerXCalc, origin)
+
+    var centerYCalc = map.getCenter()
+    centerYCalc.lat = 0
+    const centerY = map.distance(centerYCalc, origin)
+
+    // console.log(centerX, centerY)
+
+    setMapCenter({x: centerY, y: centerX})
+
+    var bounds1 = map.getBounds()._southWest
+    var bounds2 = map.getBounds()._northEast
+    bounds1.lat = 0
+    bounds2.lat = 0
+    const boundsX = map.distance(bounds1, bounds2)
+
+    bounds1 = map.getBounds()._southWest
+    bounds2 = map.getBounds()._northEast
+    bounds1.lng = 0
+    bounds2.lng = 0
+    const boundsY = map.distance(bounds1, bounds2)
+    
+    console.log("bounds", boundsX, boundsY)
+
+    setBounds({x: boundsX, y: boundsY})
   }
 
   const passLoadedData = (map, data) => {
@@ -81,21 +113,28 @@ const EuroMap = (props) => {
     // Get last point in segment 2
     const startData = data.features[1].geometry.coordinates.slice(0)[0]
     // const origin = map.latLngToLayerPoint({lat: startLatLng[0], lng: startLatLng[1]})
-    const startLatLng = new L.latLng(startData[0], startData[1])
-    console.log("origin:", origin, startLatLng)
-    const distOrigin = map.distance(map.getCenter(), startLatLng)
+    // const xStartLatLng = new L.latLng(startData[0], 0)
+    // const yStartLatLng = new L.latLng(0, startData[1])
+    // console.log("origin:", origin, startLatLng)
+    // const xDistOrigin = map.distance(map.getCenter(), xStartLatLng)
+    // const yDistOrigin = map.distance(map.getCenter(), yStartLatLng)
+    // console.log(xDistOrigin, yDistOrigin)
+    const origin = new L.latLng(0, 0)
+    const xPosition = new L.latLng(0, 0)
+    const yPosition = new L.latLng(0, 0)
     // const trans = new THREE.Vector3(origin.y, -origin.x, 0.)
     for (const feature of data.features){
       for (const coord of feature.geometry.coordinates){
         // Find distance in m of first point to origin using latLng
         // Find distance in m of next point to first point using latLng
         // Add distance in m to previous point
-
+        xPosition.lng = coord[0]
+        yPosition.lat = coord[1]
 
         threeRoute.push(
           new THREE.Vector3(
-            xy.x,
-            xy.y,
+            map.distance(xPosition, origin),
+            map.distance(yPosition, origin),
             coord[2]
           )
           // ).applyAxisAngle(zAxis, Math.PI / 2)
@@ -129,14 +168,15 @@ const EuroMap = (props) => {
         /> */}
         <EuroStats {...props}/>
         <GpxRoute {...props} passLoadedData={passLoadedData}/>
-        <MonitorMapCentre storeCenter={setMapCenter} storeMarker={setMarkerPosition} storeBounds={setBounds} storeSouthWest={setMarkerSouthWest} storeNorthEast={setMarkerNorthEast}/>
+        <MonitorMapCentre storeCenter={setMapCenter} storeLatLngCenter={setMapLatLngCenter} storeMarker={setMarkerPosition} storeBounds={setBounds} storeSouthWest={setMarkerSouthWest} storeNorthEast={setMarkerNorthEast}/>
         <Marker position={markerPosition}/>
+        <Marker position={mapLatLngCenter}/>
         <Marker position={markerSouthWest}/>
         <Marker position={markerNorthEast}/>
         <Marker position={{lat: 0., lng: 0.}}/>
       </MapContainer>
       {/* <Cyclist center={mapCenter} position={mapCenter} bounds={bounds}/> */}
-      <Cyclist center={mapCenter} position={new THREE.Vector3(0, 0, 0)} bounds={bounds} routeData={routeData}/>
+      <Cyclist center={mapCenter} bounds={bounds} routeData={routeData}/>
     </>
   )
 }

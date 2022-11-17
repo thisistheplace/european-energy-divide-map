@@ -8,25 +8,40 @@ extend(THREE)
 function Camera(props) {
   const ref = useRef()
   const set = useThree((state) => state.set)
+  const [target, setTarget] = useState(props.target)
   // This makes sure that size-related calculations are proper
   // Every call to useThree will return this camera instead of the default camera 
   useEffect(() => {
     set({ camera: ref.current })
   }, [])
 
-  return <OrthographicCamera ref={ref} {...props}/>
-}
-
-const UpdateCamera = (props) => {
-  const {camera} = useThree()
   useEffect(() => {
     if (props.position != null){
       const [x, y, z] = props.position
-      camera.position.set(x, y, z)
+      const posVec = new THREE.Vector3(x, y, z)
+      ref.current.position.lerp(posVec, 0.05)
+      ref.current.updateProjectionMatrix()
+      console.log("updated camera position", props.position)
     }
   }, [props.position])
 
-  return (null)
+  useEffect(() => {
+    setTarget(props.target)
+  }, [props.target])
+
+  useFrame((state) => {
+    if (target != null){
+      const [x, y, z] = target
+      state.camera.lookAt(x, y, z)
+      state.camera.updateProjectionMatrix()
+    }
+  }, [target])
+
+  // useFrame(() => {
+
+  // }
+
+  return <OrthographicCamera ref={ref} {...props}/>
 }
 
-export {UpdateCamera, Camera}
+export {Camera}

@@ -6,6 +6,7 @@ extend(THREE)
 
 import {Lights} from '../three/lights'
 import { Camera } from './camera'
+import { bounds } from 'leaflet'
 
 const Box = (props) => {
   // This reference gives us direct access to the THREE.Mesh object
@@ -17,16 +18,17 @@ const Box = (props) => {
   // useFrame((state, delta) => (ref.current.rotation.x += 0.01))
   useEffect(() => {
     if (ref.current && props.position) {
-      const [x, y, z] = props.position
-      ref.current.position.set(x, y, z)
+      ref.current.position.set(props.position.x, props.position.y, 0)
+      // console.log("set box position", props.position)
     }
   }, [props.position])
+  // console.log("box props", props)
   // Return the view, these are regular Threejs elements expressed in JSX
   return (
     <mesh
       // {...props}
       ref={ref}
-      scale={clicked ? 1.5 : 1}
+      scale={clicked ? 1.5 : 10000}
       onClick={(event) => click(!clicked)}
       onPointerOver={(event) => hover(true)}
       onPointerOut={(event) => hover(false)}>
@@ -79,7 +81,8 @@ const Route = (props) => {
 const Model = (props) => {
   return (
       <>
-          {/* <Box position={props.position}/> */}
+          <Box position={props.position}/>
+          {/* <Box /> */}
           <Route data={props.routeData} change={props.change}/>
       </>
   )
@@ -94,36 +97,43 @@ const ResizeRenderer = (props) => {
 }
 
 const Cyclist = (props) => {
-  const [position, setPosition] = useState(props.position)
+  // console.log(props.center)
   const [changePosition, setChangePosition] = useState(new THREE.Vector3(0, 0, 0))
   const [center, setCenter] = useState(props.center)
-  const [cameraPosition, setCameraPosition] = useState([props.position.x, props.position.y, 2000])
-  const [target, setTarget] = useState(new THREE.Vector3(position[0], position[1], position[2]))
-  const [renderSize, setRenderSize] = useState({x:0, y:0})
+  const [cameraPosition, setCameraPosition] = useState([props.center.x, props.center.y, 10000])
+  const [target, setTarget] = useState(new THREE.Vector3(props.center.x, props.center.y, 0))
+  const [renderSize, setRenderSize] = useState(props.center)
 
   useEffect(() => {
     if (props.bounds){
-      const x = props.bounds.max.x - props.bounds.min.x
-      const y = props.bounds.max.y - props.bounds.min.y
-      // console.log(x, y)
-      setRenderSize({x: x, y: y})
+      console.log("cyclist bounds", props.bounds)
+      setRenderSize(props.bounds)
     }
   }, [props.bounds])
 
   useEffect(() => {
-    // console.log(props.center, center)
-    const change = {x: props.center.x - center.x, y: props.center.y - center.y}
-    // console.log("change:", change)
-    // setCameraPosition([cameraPosition[0] + change.x, cameraPosition[1] + change.y, cameraPosition[2]])
-    changePosition.x = change.x
-    changePosition.y = change.y
-    setChangePosition(new THREE.Vector3().copy(changePosition))
-    // console.log("position:", position)
-    // console.log("changePosition:", changePosition)
-    // setTarget(new THREE.Vector3(target.x + change.x, target.y + change.y, target.z))
-    setCenter(props.center)
-    console.log('renderSize:', renderSize)
-  }, [props.center])
+    if (props.center){
+      setCameraPosition([props.center.x, props.center.y, 10000])
+      setTarget(new THREE.Vector3(props.center.x, props.center.y, 0))
+      // console.log("center", center)
+      // console.log("cameraPosition", cameraPosition)
+    }
+  }, [props])
+
+  // useEffect(() => {
+  //   // console.log(props.center, center)
+  //   const change = {x: props.center.x - center.x, y: props.center.y - center.y}
+  //   // console.log("change:", change)
+  //   // setCameraPosition([cameraPosition[0] + change.x, cameraPosition[1] + change.y, cameraPosition[2]])
+  //   changePosition.x = change.x
+  //   changePosition.y = change.y
+  //   setChangePosition(new THREE.Vector3().copy(changePosition))
+  //   // console.log("position:", position)
+  //   // console.log("changePosition:", changePosition)
+  //   // setTarget(new THREE.Vector3(target.x + change.x, target.y + change.y, target.z))
+  //   setCenter(props.center)
+  //   console.log('renderSize:', renderSize)
+  // }, [props.center])
 
   // useEffect(() => {
   //   setCameraPosition()
@@ -132,7 +142,8 @@ const Cyclist = (props) => {
   // console.log(renderSize)
 
   return (
-    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents": "none"}}>
+    // <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents": "none"}}>
+    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%"}}>
       <Canvas shadows style={{'background':'clear'}}>
           <Lights/>
           <Camera
@@ -142,15 +153,15 @@ const Cyclist = (props) => {
             right={renderSize.x / 2}
             top={renderSize.y / 2}
             bottom={renderSize.y / -2}
-            near={1}
-            far={1000000}
+            near={0.1}
+            far={100000000000000}
           />
           <OrbitControls/>
           {/* <ResizeRenderer size={renderSize}/> */}
-          <axesHelper />
+          <axesHelper scale={100000}/>
           {/* <OrthographicCamera makeDefault position={position}> */}
           <Suspense fallback={null}>
-            <Model routeData={props.routeData} change={changePosition}/>
+            <Model routeData={props.routeData} change={changePosition} position={props.center}/>
           </Suspense>
           {/* </OrthographicCamera> */}
       </Canvas>
