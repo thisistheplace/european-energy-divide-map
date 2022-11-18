@@ -1,7 +1,8 @@
 import React, {useRef, useEffect, useState} from 'react';
 import {extend, useFrame, useThree} from '@react-three/fiber'
-import { OrthographicCamera } from '@react-three/drei'
+import { OrthographicCamera, useHelper } from '@react-three/drei'
 import * as THREE from 'three'
+import { CameraHelper } from 'three';
 
 extend(THREE)
 
@@ -40,6 +41,8 @@ function Camera(props) {
   // useFrame(() => {
 
   // }
+
+  // useHelper(ref, CameraHelper, 1, 'hotpink')
 
   return <OrthographicCamera ref={ref} {...props}/>
 }

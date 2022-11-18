@@ -1,6 +1,6 @@
 import React, { useRef, useState, Suspense, useEffect, useLayoutEffect } from 'react'
 import { extend, Canvas, useFrame, useThree } from '@react-three/fiber'
-import {OrbitControls} from '@react-three/drei'
+import {OrbitControls, Points} from '@react-three/drei'
 import * as THREE from 'three'
 extend(THREE)
 
@@ -28,7 +28,7 @@ const Box = (props) => {
     <mesh
       // {...props}
       ref={ref}
-      scale={clicked ? 1.5 : 10000}
+      scale={clicked ? 1.5 : 100}
       onClick={(event) => click(!clicked)}
       onPointerOver={(event) => hover(true)}
       onPointerOut={(event) => hover(false)}>
@@ -54,34 +54,61 @@ function Line(props) {
   )
 }
 
+// const Route = (props) => {
+//   const [points, setPoints] = useState([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0)])
+//   const [update, setUpdate] = useState(false)
+
+//   useEffect(() => {
+//     if (props.data){
+//       props.data.forEach(element => {
+//         element.add(props.change)
+//       });
+//       // console.log(props.data[0])
+//       // console.log("setting points")
+//       setPoints(props.data)
+//       setUpdate(!update)
+//     }
+//   }, [props.data])
+
+//   // useFrame
+
+//   return <Line
+//     points={points}
+//     update={update}
+//   />
+// }
+
 const Route = (props) => {
-  const [points, setPoints] = useState([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 0)])
+  const [points, setPoints] = useState(new Float32Array([0,0,0,1000,1000,0]))
   const [update, setUpdate] = useState(false)
 
   useEffect(() => {
     if (props.data){
+      const newPoints = []
       props.data.forEach(element => {
-        element.add(props.change)
+        newPoints.push(element.x, element.y, element.z)
       });
       // console.log(props.data[0])
       // console.log("setting points")
-      setPoints(props.data)
+      setPoints(new Float32Array(newPoints))
+      console.log(points)
       setUpdate(!update)
     }
   }, [props.data])
 
   // useFrame
 
-  return <Line
-    points={points}
-    update={update}
-  />
+  return (
+    <Points positions={points}>
+      <pointsMaterial color={"blue"}/>
+    </Points>
+  )
 }
 
 const Model = (props) => {
   return (
       <>
-          <Box position={props.position}/>
+          {/* <Box position={props.position}/> */}
           {/* <Box /> */}
           <Route data={props.routeData} change={props.change}/>
       </>
@@ -100,7 +127,7 @@ const Cyclist = (props) => {
   // console.log(props.center)
   const [changePosition, setChangePosition] = useState(new THREE.Vector3(0, 0, 0))
   const [center, setCenter] = useState(props.center)
-  const [cameraPosition, setCameraPosition] = useState([props.center.x, props.center.y, 10000])
+  const [cameraPosition, setCameraPosition] = useState([props.center.x, props.center.y, 1e4])
   const [target, setTarget] = useState(new THREE.Vector3(props.center.x, props.center.y, 0))
   const [renderSize, setRenderSize] = useState(props.center)
 
@@ -113,7 +140,7 @@ const Cyclist = (props) => {
 
   useEffect(() => {
     if (props.center){
-      setCameraPosition([props.center.x, props.center.y, 10000])
+      setCameraPosition([props.center.x, props.center.y, 1e4])
       setTarget(new THREE.Vector3(props.center.x, props.center.y, 0))
       // console.log("center", center)
       // console.log("cameraPosition", cameraPosition)
@@ -141,6 +168,8 @@ const Cyclist = (props) => {
 
   // console.log(renderSize)
 
+  console.log(props)
+
   return (
     // <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents": "none"}}>
     <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%"}}>
@@ -153,10 +182,12 @@ const Cyclist = (props) => {
             right={renderSize.x / 2}
             top={renderSize.y / 2}
             bottom={renderSize.y / -2}
-            near={0.1}
-            far={100000000000000}
+            near={1}
+            far={1e6}
           />
-          <OrbitControls/>
+          <OrbitControls
+            zoomSpeed={0.5}
+          />
           {/* <ResizeRenderer size={renderSize}/> */}
           <axesHelper scale={100000}/>
           {/* <OrthographicCamera makeDefault position={position}> */}

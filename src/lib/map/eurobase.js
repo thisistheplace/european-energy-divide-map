@@ -73,6 +73,7 @@ const EuroMap = (props) => {
   const [mapCenter, setMapCenter] = useState(props.mapCenter)
   const [bounds, setBounds] = useState()
   const [routeData, setRouteData] = useState()
+  const [scale, setScale] = useState(1000)
   const cartodbAttribution = 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 
   const SaveBounds = (map) => {
@@ -104,7 +105,7 @@ const EuroMap = (props) => {
     
     console.log("bounds", boundsX, boundsY)
 
-    setBounds({x: boundsX, y: boundsY})
+    setBounds({x: boundsX / scale, y: boundsY / scale})
   }
 
   const passLoadedData = (map, data) => {
@@ -133,9 +134,10 @@ const EuroMap = (props) => {
 
         threeRoute.push(
           new THREE.Vector3(
-            map.distance(xPosition, origin),
-            map.distance(yPosition, origin),
-            coord[2]
+            map.distance(xPosition, origin) / scale * Math.sign(xPosition.lng),
+            map.distance(yPosition, origin) / scale * Math.sign(yPosition.lat),
+            // coord[2]
+            0.
           )
           // ).applyAxisAngle(zAxis, Math.PI / 2)
           // .add(trans)
@@ -176,7 +178,7 @@ const EuroMap = (props) => {
         <Marker position={{lat: 0., lng: 0.}}/>
       </MapContainer>
       {/* <Cyclist center={mapCenter} position={mapCenter} bounds={bounds}/> */}
-      <Cyclist center={mapCenter} bounds={bounds} routeData={routeData}/>
+      <Cyclist center={{x: mapCenter.x / scale, y: mapCenter.y / scale}} bounds={bounds} routeData={routeData} scale={scale}/>
     </>
   )
 }
