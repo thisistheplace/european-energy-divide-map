@@ -5,10 +5,6 @@ import { getJsonData } from './loadjson'
 const ProcessData = (props) => {
   const map = useMap()
   useEffect(()=>{
-    // console.log(data)
-    // const start = data.features[0].geometry.coordinates[0]
-    // console.log(start)
-    // console.log(map.latLngToLayerPoint({lat: start[0], lng: start[1]}))
     props.callback(map, props.data)
   },[props.data])
 

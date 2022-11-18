@@ -14,10 +14,10 @@ function calcMapCenter(map) {
   const origin = new L.latLng(0, 0)
   var centerXCalc = map.getCenter()
   centerXCalc.lng = 0
-  const centerX = map.distance(centerXCalc, origin)
+  const centerX = map.distance(centerXCalc, origin) * Math.sign(centerXCalc.lat)
   var centerYCalc = map.getCenter()
   centerYCalc.lat = 0
-  const centerY = map.distance(centerYCalc, origin)
+  const centerY = map.distance(centerYCalc, origin) * Math.sign(centerYCalc.lng)
   return {x: centerY, y: centerX}
 }
 
@@ -39,23 +39,12 @@ function calcMapBounds(map, scale) {
 const MonitorMapCentre = (props) => {
   const map = useMapEvents({
     click: () => {
-      // console.log("loaded")
-      // console.log(map.getBounds())
-      // console.log(map.getPixelBounds())
-      // console.log(map.latLngToLayerPoint(map.getBounds()._southWest))
-      // console.log(map.latLngToLayerPoint(map.getBounds()._northEast))
-      // console.log(map.latLngToContainerPoint(map.getBounds()._southWest))
-      // console.log(map.latLngToContainerPoint(map.getBounds()._northEast))
       const northEast = map.getBounds()._northEast
       const southWest = map.getBounds()._southWest
       const northWest = map.getBounds()._northEast
       northWest.lat = southWest.lat
       const southEast = map.getBounds()._southWest
       southEast.lng = northEast.lng
-      // console.log(southEast, northWest)
-      // console.log(map.distance(southEast, northEast))
-      // console.log(map.distance(southEast, southWest))
-
       props.storeNorthEast(northEast)
       props.storeSouthWest(southWest)
     },
@@ -65,19 +54,13 @@ const MonitorMapCentre = (props) => {
       props.storeCenter(calcMapCenter(map))
       props.storeBounds(calcMapBounds(map, props.scale))
       props.storeMarker(center)
-      // props.storeBounds(map.getPixelBounds())
     },
     dragend: () => {
-      // console.log(map)
       const center = map.getCenter()
       props.storeLatLngCenter(center)
       props.storeCenter(calcMapCenter(map))
       props.storeBounds(calcMapBounds(map, props.scale))
       props.storeMarker(center)
-      // console.log(map.getBounds())
-      // console.log(map.getPixelBounds())
-      // console.log(map.latLngToLayerPoint(map.getBounds()._northEast))
-      // props.storeBounds(map.getPixelBounds())
     },
     zoom: () => {
       const center = map.getCenter()
@@ -85,7 +68,6 @@ const MonitorMapCentre = (props) => {
       props.storeCenter(calcMapCenter(map))
       props.storeBounds(calcMapBounds(map, props.scale))
       props.storeMarker(center)
-      // props.storeBounds(map.getPixelBounds())
     }
   })
   return null
@@ -109,28 +91,13 @@ const EuroMap = (props) => {
 
   const passLoadedData = (map, data) => {
     const threeRoute = []
-    // const zAxis = new THREE.Vector3(0, 0, 1)
-    // Get last point in segment 2
-    const startData = data.features[1].geometry.coordinates.slice(0)[0]
-    // const origin = map.latLngToLayerPoint({lat: startLatLng[0], lng: startLatLng[1]})
-    // const xStartLatLng = new L.latLng(startData[0], 0)
-    // const yStartLatLng = new L.latLng(0, startData[1])
-    // console.log("origin:", origin, startLatLng)
-    // const xDistOrigin = map.distance(map.getCenter(), xStartLatLng)
-    // const yDistOrigin = map.distance(map.getCenter(), yStartLatLng)
-    // console.log(xDistOrigin, yDistOrigin)
     const origin = new L.latLng(0, 0)
     const xPosition = new L.latLng(0, 0)
     const yPosition = new L.latLng(0, 0)
-    // const trans = new THREE.Vector3(origin.y, -origin.x, 0.)
     for (const feature of data.features){
       for (const coord of feature.geometry.coordinates){
-        // Find distance in m of first point to origin using latLng
-        // Find distance in m of next point to first point using latLng
-        // Add distance in m to previous point
         xPosition.lng = coord[0]
         yPosition.lat = coord[1]
-
         threeRoute.push(
           new THREE.Vector3(
             map.distance(xPosition, origin) / scale * Math.sign(xPosition.lng),
@@ -138,8 +105,6 @@ const EuroMap = (props) => {
             coord[2]
             // 0.
           )
-          // ).applyAxisAngle(zAxis, Math.PI / 2)
-          // .add(trans)
         )
       }
     }

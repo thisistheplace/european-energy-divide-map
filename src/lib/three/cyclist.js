@@ -6,7 +6,6 @@ extend(THREE)
 
 import {Lights} from '../three/lights'
 import { Camera } from './camera'
-import { bounds } from 'leaflet'
 
 const Box = (props) => {
   // This reference gives us direct access to the THREE.Mesh object
