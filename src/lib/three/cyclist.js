@@ -171,8 +171,8 @@ const Cyclist = (props) => {
   console.log(props)
 
   return (
-    // <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents": "none"}}>
-    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%"}}>
+    <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%", "pointerEvents": "none"}}>
+    {/* <div style={{"position": "absolute", "zIndex":"1000", "top":"0px", "left":"0px", "width":"100%", "height":"100%"}}> */}
       <Canvas shadows style={{'background':'clear'}}>
           <Lights/>
           <Camera

@@ -10,6 +10,32 @@ import { EuroStats } from './eurostats.js'
 import { Cyclist } from '../three/cyclist'
 
 
+function calcMapCenter(map) {
+  const origin = new L.latLng(0, 0)
+  var centerXCalc = map.getCenter()
+  centerXCalc.lng = 0
+  const centerX = map.distance(centerXCalc, origin)
+  var centerYCalc = map.getCenter()
+  centerYCalc.lat = 0
+  const centerY = map.distance(centerYCalc, origin)
+  return {x: centerY, y: centerX}
+}
+
+function calcMapBounds(map, scale) {
+  var bounds1 = map.getBounds()._southWest
+  var bounds2 = map.getBounds()._northEast
+  bounds1.lat = 0
+  bounds2.lat = 0
+  const boundsX = map.distance(bounds1, bounds2)
+
+  bounds1 = map.getBounds()._southWest
+  bounds2 = map.getBounds()._northEast
+  bounds1.lng = 0
+  bounds2.lng = 0
+  const boundsY = map.distance(bounds1, bounds2)
+  return {x: boundsX / scale, y: boundsY / scale}
+}
+
 const MonitorMapCentre = (props) => {
   const map = useMapEvents({
     click: () => {
@@ -36,8 +62,8 @@ const MonitorMapCentre = (props) => {
     drag: () => {
       const center = map.getCenter()
       props.storeLatLngCenter(center)
-      const centerCoords = map.latLngToLayerPoint(center)
-      props.storeCenter({x: centerCoords.x, y: centerCoords.y})
+      props.storeCenter(calcMapCenter(map))
+      props.storeBounds(calcMapBounds(map, props.scale))
       props.storeMarker(center)
       // props.storeBounds(map.getPixelBounds())
     },
@@ -45,8 +71,8 @@ const MonitorMapCentre = (props) => {
       // console.log(map)
       const center = map.getCenter()
       props.storeLatLngCenter(center)
-      const centerCoords = map.latLngToLayerPoint(center)
-      props.storeCenter({x: centerCoords.x, y: centerCoords.y})
+      props.storeCenter(calcMapCenter(map))
+      props.storeBounds(calcMapBounds(map, props.scale))
       props.storeMarker(center)
       // console.log(map.getBounds())
       // console.log(map.getPixelBounds())
@@ -56,8 +82,8 @@ const MonitorMapCentre = (props) => {
     zoom: () => {
       const center = map.getCenter()
       props.storeLatLngCenter(center)
-      const centerCoords = map.latLngToLayerPoint(center)
-      props.storeCenter({x: centerCoords.x, y: centerCoords.y})
+      props.storeCenter(calcMapCenter(map))
+      props.storeBounds(calcMapBounds(map, props.scale))
       props.storeMarker(center)
       // props.storeBounds(map.getPixelBounds())
     }
@@ -77,35 +103,8 @@ const EuroMap = (props) => {
   const cartodbAttribution = 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
 
   const SaveBounds = (map) => {
-    const origin = new L.latLng(0, 0)
-
-    var centerXCalc = map.getCenter()
-    centerXCalc.lng = 0
-    const centerX = map.distance(centerXCalc, origin)
-
-    var centerYCalc = map.getCenter()
-    centerYCalc.lat = 0
-    const centerY = map.distance(centerYCalc, origin)
-
-    // console.log(centerX, centerY)
-
-    setMapCenter({x: centerY, y: centerX})
-
-    var bounds1 = map.getBounds()._southWest
-    var bounds2 = map.getBounds()._northEast
-    bounds1.lat = 0
-    bounds2.lat = 0
-    const boundsX = map.distance(bounds1, bounds2)
-
-    bounds1 = map.getBounds()._southWest
-    bounds2 = map.getBounds()._northEast
-    bounds1.lng = 0
-    bounds2.lng = 0
-    const boundsY = map.distance(bounds1, bounds2)
-    
-    console.log("bounds", boundsX, boundsY)
-
-    setBounds({x: boundsX / scale, y: boundsY / scale})
+    setMapCenter(calcMapCenter(map))
+    setBounds(calcMapBounds(map, scale))
   }
 
   const passLoadedData = (map, data) => {
@@ -136,8 +135,8 @@ const EuroMap = (props) => {
           new THREE.Vector3(
             map.distance(xPosition, origin) / scale * Math.sign(xPosition.lng),
             map.distance(yPosition, origin) / scale * Math.sign(yPosition.lat),
-            // coord[2]
-            0.
+            coord[2]
+            // 0.
           )
           // ).applyAxisAngle(zAxis, Math.PI / 2)
           // .add(trans)
@@ -170,7 +169,7 @@ const EuroMap = (props) => {
         /> */}
         <EuroStats {...props}/>
         <GpxRoute {...props} passLoadedData={passLoadedData}/>
-        <MonitorMapCentre storeCenter={setMapCenter} storeLatLngCenter={setMapLatLngCenter} storeMarker={setMarkerPosition} storeBounds={setBounds} storeSouthWest={setMarkerSouthWest} storeNorthEast={setMarkerNorthEast}/>
+        <MonitorMapCentre scale={scale} storeCenter={setMapCenter} storeLatLngCenter={setMapLatLngCenter} storeMarker={setMarkerPosition} storeBounds={setBounds} storeSouthWest={setMarkerSouthWest} storeNorthEast={setMarkerNorthEast}/>
         <Marker position={markerPosition}/>
         <Marker position={mapLatLngCenter}/>
         <Marker position={markerSouthWest}/>
